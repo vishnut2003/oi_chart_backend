@@ -54,18 +54,34 @@ router.get('/generate-refresh-token', (req, res) => {
 
 })
 
-router.get('/oi-data', async (req, res) => {
-    const access_token = await fyersHelpers.generateNewAccess()
-    
-    fyersHelpers.getAllSymbols(access_token)
-        .then((response) => {
-            console.log(response)
-            res.json(response)
-        })
-        .catch((err) => {
-            res.json(err)
-        })
+router.get('/nfo-symbols', async (req, res) => {    
+    const symbols = await fyersHelpers.getAllSymbols()
+    res.send(symbols)
+})
 
+router.get('/nifty-expiry', async (req, res) => {
+    const redirectURL = req.protocol + '://' + req.get('host') + '/fyers/generate-refresh-token'
+    const accessToken = await fyersHelpers.generateNewAccess()
+    fyersHelpers.getNiftyExpiry(redirectURL, accessToken)
+        .then((expiry) => {
+            res.send(expiry);
+        })
+})
+
+router.get('/expiry/:symbol', async (req, res) => {
+    const redirectURL = req.protocol + '://' + req.get('host') + '/fyers/generate-refresh-token'
+    const accessToken = await fyersHelpers.generateNewAccess()
+    fyersHelpers.getSymbolExpiry(redirectURL, accessToken, req.params.symbol)
+        .then((expiries) => {
+            res.send(expiries)
+        })
+})
+
+router.get('/oi-data', async (req, res) => {
+    const redirectURL = req.protocol + '://' + req.get('host') + '/fyers/generate-refresh-token'
+    const accessToken = await fyersHelpers.generateNewAccess()
+    await fyersHelpers.getOiData(redirectURL, accessToken)
+    res.send('working')
 })
 
 module.exports = router;
