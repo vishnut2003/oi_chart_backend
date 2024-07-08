@@ -8,11 +8,11 @@ const symbolCsv = require('../additional_process/forcsv');
 module.exports = {
     generateNewAccess: async () => {
 
-        const concatenatedString = process.env.APP_ID + process.env.SECRET_ID;
+        const concatenatedString = process.env.FYERS_API_ID + process.env.FYERS_API_SECRET;
         const hash = crypto.createHash('sha256').update(concatenatedString).digest('hex');
 
         const pin = process.env.FYERS_PIN
-        const refreshToken = await fsPromise.readFile(path.join(__dirname, '..', 'routes', 'credentials', 'refresh_token.txt'), { encoding: 'utf8' })
+        const refreshToken = await fsPromise.readFile(path.join(__dirname, '..', 'routes', 'credentials', 'fyers_refresh_token.txt'), { encoding: 'utf8' })
 
         const response = await axios.post('https://api.fyers.in/api/v2/validate-refresh-token', {
             grant_type: 'refresh_token',
@@ -34,7 +34,7 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
 
             // fyers credencials
-            const app_id = process.env.APP_ID
+            const app_id = process.env.FYERS_API_ID
 
             const fyers = new fyersModel()
             fyers.setAppId(app_id)
@@ -85,7 +85,7 @@ module.exports = {
             let expiry;
 
             // fyers credencials
-            const app_id = process.env.APP_ID
+            const app_id = process.env.FYERS_API_ID
 
             const fyers = new fyersModel()
             fyers.setAppId(app_id)

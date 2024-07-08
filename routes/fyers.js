@@ -6,8 +6,8 @@ const path = require('path')
 const fyersHelpers = require('../helpers/fyersHelpers')
 
 // Credentials for fyers
-const appId = process.env.APP_ID
-const secretId = process.env.SECRET_ID
+const appId = process.env.FYERS_API_ID
+const secretId = process.env.FYERS_API_SECRET
 
 router.get('/generate-auth', (req, res) => {
 
@@ -44,8 +44,7 @@ router.get('/generate-refresh-token', (req, res) => {
                 if (!fs.existsSync(path.join(__dirname, 'credentials'))) {
                     await fs.mkdirSync(path.join(__dirname, 'credentials'))
                 }
-                await fsPromise.writeFile(path.join(__dirname, 'credentials', 'access_token.txt'), response.access_token)
-                await fsPromise.writeFile(path.join(__dirname, 'credentials', 'refresh_token.txt'), response.refresh_token)
+                await fsPromise.writeFile(path.join(__dirname, 'credentials', 'fyers_refresh_token.txt'), response.refresh_token)
                 res.send('Refresh token generated successfully')
             } catch (err) {
                 res.send(err);
@@ -75,13 +74,6 @@ router.get('/expiry/:symbol', async (req, res) => {
         .then((expiries) => {
             res.send(expiries)
         })
-})
-
-router.get('/oi-data', async (req, res) => {
-    const redirectURL = req.protocol + '://' + req.get('host') + '/fyers/generate-refresh-token'
-    const accessToken = await fyersHelpers.generateNewAccess()
-    await fyersHelpers.getOiData(redirectURL, accessToken)
-    res.send('working')
 })
 
 module.exports = router;
