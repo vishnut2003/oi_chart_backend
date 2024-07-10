@@ -58,21 +58,14 @@ router.get('/nfo-symbols', async (req, res) => {
     res.send(symbols)
 })
 
-router.get('/nifty-expiry', async (req, res) => {
-    const redirectURL = req.protocol + '://' + req.get('host') + '/fyers/generate-refresh-token'
-    const accessToken = await fyersHelpers.generateNewAccess()
-    fyersHelpers.getNiftyExpiry(redirectURL, accessToken)
-        .then((expiry) => {
-            res.send(expiry);
-        })
-})
-
 router.get('/expiry/:symbol', async (req, res) => {
-    const redirectURL = req.protocol + '://' + req.get('host') + '/fyers/generate-refresh-token'
-    const accessToken = await fyersHelpers.generateNewAccess()
-    fyersHelpers.getSymbolExpiry(redirectURL, accessToken, req.params.symbol)
-        .then((expiries) => {
-            res.send(expiries)
+    const symbol = req.params.symbol
+    const redirectURL = req.protocol + '://' + req.get('host') + '/fyers/generate-refresh-token';
+    const access_token = await fyersHelpers.generateNewAccess()
+    
+    fyersHelpers.getSymbolExpiry(redirectURL, access_token, symbol)
+        .then((expiryObject) => {
+            res.send(expiryObject)
         })
 })
 
