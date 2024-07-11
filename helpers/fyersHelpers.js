@@ -114,5 +114,38 @@ module.exports = {
                     resolve(strikePriceObject)
                 })
         })
+    },
+    getOiDataForIndex: (symbol, expiry, strikePriceRange, intervel, startDate, endDate, access_token, redirectURL) => {
+        return new Promise((resolve, reject) => {
+            const appId = process.env.FYERS_API_ID;
+
+            const fyers = new fyersModel();
+            fyers.setAppId(appId);
+            fyers.setRedirectUrl(redirectURL);
+            fyers.setAccessToken(access_token)
+
+            let fullSymbol;
+
+            fullSymbol = `NSE:${symbol}${expiry}${strikePriceRange[0].strike_price}CE`;
+
+            const input = {
+                "symbol": fullSymbol,
+                "resolution": intervel,
+                "date_format": "1",
+                "range_from": startDate,
+                "range_to": endDate,
+                "cont_fclag": "1",
+                "oi_flag": "1"
+            }
+
+            fyers.getHistory(input)
+                .then((res) => {
+                    console.log(res)
+                })
+                .catch((err) => {
+                    console.log(err)
+                    // console.log(strikePriceRange)
+                })
+        })
     }
 }

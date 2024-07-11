@@ -29,10 +29,37 @@ router.post('/save-session-key', async (req, res) => {
     }
 })
 
-router.get('/get-nifty-data', async (req, res) => {
-    const session_token = await breezeHelpers.getApiSessionKey()
-    const expiry = '2024-07-11T04:00:00'
-    await breezeHelpers.getNiftyData(session_token, expiry)
+router.post('/oi-data', async (req, res) => {
+    let symbol = req.body.symbol || '';
+    let expiry = req.body.expiryDate;
+    let intervel = req.body.intervel;
+    let date = req.body.historical;
+    let strikeRange = req.body.strikeRange;
+
+    if (expiry) expiry = expiry.split('-')
+    if (date) date = date.split('-')
+
+    // expiry date
+    let expiryDay = expiry[0]
+    let expiryMonth = expiry[1]
+    let expiryYear = expiry[2]
+    const fullExpiry = `${expiryYear}-${expiryMonth}-${expiryDay}T07:00:00.000Z`
+
+    // date and next date
+    let specDateYear = date[0]
+    let specDateMonth = date[1]
+    let specDateDay = date[2]
+    const specStartDate = `${specDateYear}-${specDateMonth}-${specDateDay}T07:00:00.000Z`
+    let specEndDate = new Date(`${specDateYear}-${specDateMonth}-${specDateDay}`)
+    specEndDate.setDate(specEndDate.getDate() + 1)
+    specEndDate = specEndDate.toISOString()
+
+    const access_token = await breezeHelpers.getApiSessionKey()
+    breezeHelpers.getOiData(access_token, symbol, fullExpiry, intervel, specStartDate, specEndDate, strikeRange)
+        .then((oi) => {
+            res.send(oi);
+        })
+    
 })
 
 module.exports = router
