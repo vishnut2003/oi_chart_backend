@@ -69,4 +69,16 @@ router.get('/expiry/:symbol', async (req, res) => {
         })
 })
 
+router.get('/strike-price/:symbol', async (req, res) => {
+    const symbol = req.params.symbol;
+
+    const redirectURL = req.protocol + '://' + req.get('host') + '/fyers/generate-refresh-token';
+    const access_token = await fyersHelpers.generateNewAccess()
+
+    fyersHelpers.getStrikePrice(redirectURL, access_token, symbol)
+        .then((strikeObject) => {
+            res.send(strikeObject)
+        })
+})
+
 module.exports = router;

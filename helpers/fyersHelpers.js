@@ -41,7 +41,7 @@ module.exports = {
 
             rawSymbol = rawSymbol.toUpperCase();
 
-            if(rawSymbol == 'NIFTY') 
+            if (rawSymbol == 'NIFTY')
                 symbol = `NSE:NIFTY50-INDEX`;
             else if (rawSymbol.includes('BANKNIFTY'))
                 symbol = `NSE:NIFTYBANK-INDEX`;
@@ -52,22 +52,67 @@ module.exports = {
             fyers.getOptionChain({
                 symbol: symbol,
             })
-            .then((res) => {
-                let rawExpiryObject = []
-                rawExpiryObject = res.data.expiryData || [];
+                .then((res) => {
+                    let rawExpiryObject = []
+                    rawExpiryObject = res.data.expiryData || [];
 
-                const currentMonth = new Date().getMonth() + 1;
-                const currentYear = new Date().getFullYear();
-                const monthDate = currentMonth + '-' + currentYear;
+                    const currentMonth = new Date().getMonth() + 1;
+                    const currentYear = new Date().getFullYear();
+                    const monthDate = currentMonth + '-' + currentYear;
 
-                const expiryObject = rawExpiryObject.filter((expiry, index) => {
-                    if (expiry.date.includes(monthDate)) {
-                        return expiry
-                    }
+                    const expiryObject = rawExpiryObject.filter((expiry, index) => {
+                        if (expiry.date.includes(monthDate)) {
+                            return expiry
+                        }
+                    })
+
+                    resolve(expiryObject)
                 })
+        })
+    },
+    getStrikePrice: (redirectUrl, access_token, rawSymbol) => {
+        return new Promise((resolve, reject) => {
+            const appId = process.env.FYERS_API_ID;
+            let symbol;
 
-                resolve(expiryObject)
-            })
+            const fyers = new fyersModel();
+            fyers.setAppId(appId);
+            fyers.setRedirectUrl(redirectUrl);
+            fyers.setAccessToken(access_token)
+
+            rawSymbol = rawSymbol.toUpperCase();
+
+            if (rawSymbol == 'NIFTY')
+                symbol = `NSE:NIFTY50-INDEX`;
+            else if (rawSymbol.includes('BANKNIFTY'))
+                symbol = `NSE:NIFTYBANK-INDEX`;
+            else if (rawSymbol.includes('NIFTY'))
+                symbol = `NSE:${rawSymbol}-INDEX`
+            else symbol = `NSE:${rawSymbol}-EQ`;
+
+            fyers.getOptionChain({ symbol })
+                .then((res) => {
+                    const optionChain = res.data.optionsChain || []
+                    const strikePriceObject = [];
+
+                    for (let i = 0; i < optionChain.length; i++) {
+                        let { strike_price, symbol } = optionChain[i]
+
+                        if (symbol) {
+                            symbol = symbol.slice(0, -2);
+                        }
+
+                        if (optionChain[i].option_type == 'CE') {
+                            strikePriceObject.push({
+                                strike_price: strike_price,
+                                symbol: symbol
+                            })
+                        }
+
+                    }
+
+                    resolve(strikePriceObject)
+                })
         })
     }
 }
