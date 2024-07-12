@@ -50,7 +50,7 @@ router.post('/oi-data', async (req, res) => {
     let specDateMonth = date[1]
     let specDateDay = date[2]
     const specStartDate = `${specDateYear}-${specDateMonth}-${specDateDay}T07:00:00.000Z`
-    let specEndDate = new Date(`${specDateYear}-${specDateMonth}-${specDateDay}`)
+    let specEndDate = new Date(`${specDateYear}-${specDateMonth}-${specDateDay} 12:30`)
     specEndDate.setDate(specEndDate.getDate() + 1)
     specEndDate = specEndDate.toISOString()
 
