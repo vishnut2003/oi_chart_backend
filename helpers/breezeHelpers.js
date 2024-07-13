@@ -19,6 +19,12 @@ module.exports = {
             const breeze = new BreezeConnect({ "appKey": apiKey })
             await breeze.generateSession(secretKey, access_token)
                 .then(async () => {
+                    console.log(intervel)
+                    console.log(startDate)
+                    console.log(endDate)
+                    console.log(symbol)
+                    console.log(expiry)
+                    console.log(strikeRange)
                     for (let i = 0; i < strikeRange.length; i++) {
                         await breeze.getHistoricalDatav2({
                             interval: intervel,
