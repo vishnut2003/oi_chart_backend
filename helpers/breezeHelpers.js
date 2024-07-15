@@ -7,6 +7,30 @@ module.exports = {
         const sessionKey = await fsPromise.readFile(path.join(__dirname, '..', 'routes', 'credentials', 'access_token.txt'), { encoding: 'utf8' })
         return sessionKey
     },
+    getExpiry: (symbol, access_token) => {
+        return new Promise(async (resolve, reject) => {
+            const apiKey = process.env.API_KEY
+            const secretKey = process.env.SECRET_KEY
+
+            const breeze = new BreezeConnect({ "appKey": apiKey })
+            breeze.generateSession(secretKey, access_token)
+                .then((res) => {
+                    breeze.getQuotes({
+                        stockCode: "NIFTY",
+                        exchangeCode: "NSE"
+                    })
+                        .then((res) => {
+                            console.log(res)
+                        })
+                        .catch((err) => {
+                            console.log(err)
+                        })
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        })
+    },
     getOiData: (access_token, symbol, expiry, intervel, startDate, endDate, strikeRange) => {
         return new Promise(async (resolve, reject) => {
             const apiKey = process.env.API_KEY
@@ -134,7 +158,7 @@ module.exports = {
                 let { call_Oi, call_oi_change, call_date_time } = callOi[i]
                 let { put_Oi, put_oi_change } = putOi[i]
 
-                if(isNaN(put_oi_change)) put_oi_change = 0
+                if (isNaN(put_oi_change)) put_oi_change = 0
 
                 if (call_date_time) {
                     call_date_time = call_date_time.split(' ')[1].substring(0, 5)
@@ -148,7 +172,7 @@ module.exports = {
                     futures_oi_change = 0
                 } else {
                     future_oi = futures[i].future_oi
-                    futures_oi_change = futures[i].futures_oi_change                    
+                    futures_oi_change = futures[i].futures_oi_change
                 }
 
                 fullOiDate.push({

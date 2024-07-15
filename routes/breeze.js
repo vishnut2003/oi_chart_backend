@@ -4,6 +4,7 @@ const fsPromise = require('fs/promises')
 const fs = require('fs')
 const path = require('path')
 const breezeHelpers = require('../helpers/breezeHelpers')
+const getBreezeSymbols = require('../additional_process/breezeCsv')
 
 router.get('/', (req, res) => {
     res.send('Working')
@@ -27,6 +28,19 @@ router.post('/save-session-key', async (req, res) => {
     } catch (err) {
         res.send(err);
     }
+})
+
+router.get('/nfo-symbols', (req, res) => {
+    getBreezeSymbols()
+        .then((symbols) => {
+            res.send(symbols)
+        })
+})
+
+router.get('/expiry/:symbol', async (req, res) => {
+    const access_token = await breezeHelpers.getApiSessionKey()
+    breezeHelpers.getExpiry(req.params.symbol, access_token)
+    res.send(req.params.symbol)
 })
 
 router.post('/oi-data', async (req, res) => {
