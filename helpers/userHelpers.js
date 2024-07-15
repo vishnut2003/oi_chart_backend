@@ -44,5 +44,13 @@ module.exports = {
             if (!user) reject()
             else resolve(user)
         })
+    },
+    searchUsers: (email) => {
+        return new Promise((resolve, reject) => {
+            User.findOne({email})
+                .then((res) => {
+                    resolve(res)
+                })
+        })
     }
 }

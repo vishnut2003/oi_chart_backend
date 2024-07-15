@@ -12,6 +12,7 @@ const authRouter = require('./routes/auth');
 const userRoute = require('./routes/users');
 const fyersRoute = require('./routes/fyers');
 const breezeRouter = require('./routes/breeze');
+const settingsRouter = require('./routes/settings')
 
 
 // Configure port
@@ -37,6 +38,7 @@ app.use('/auth', authRouter);
 app.use('/users', userRoute);
 app.use('/fyers/', fyersRoute);
 app.use('/breeze', breezeRouter);
+app.use('/settings', settingsRouter);
 
 // Connect to database
 dbConnect(() => {

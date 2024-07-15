@@ -11,4 +11,13 @@ router.post('/verify', (req, res) => {
         })
 })
 
+router.post('/search-users', (req, res) => {
+    const email = req.body.email
+    userHelpers.searchUsers(email)
+        .then((users) => {
+            if (users === null) return res.status(404).send('User not found')
+            res.status(200).send(users)
+        })
+})
+
 module.exports = router;

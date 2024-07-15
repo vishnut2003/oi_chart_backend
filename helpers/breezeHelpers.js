@@ -7,30 +7,6 @@ module.exports = {
         const sessionKey = await fsPromise.readFile(path.join(__dirname, '..', 'routes', 'credentials', 'access_token.txt'), { encoding: 'utf8' })
         return sessionKey
     },
-    getExpiry: (symbol, access_token) => {
-        return new Promise(async (resolve, reject) => {
-            const apiKey = process.env.API_KEY
-            const secretKey = process.env.SECRET_KEY
-
-            const breeze = new BreezeConnect({ "appKey": apiKey })
-            breeze.generateSession(secretKey, access_token)
-                .then((res) => {
-                    breeze.getQuotes({
-                        stockCode: "NIFTY",
-                        exchangeCode: "NSE"
-                    })
-                        .then((res) => {
-                            console.log(res)
-                        })
-                        .catch((err) => {
-                            console.log(err)
-                        })
-                })
-                .catch((err) => {
-                    console.log(err)
-                })
-        })
-    },
     getOiData: (access_token, symbol, expiry, intervel, startDate, endDate, strikeRange) => {
         return new Promise(async (resolve, reject) => {
             const apiKey = process.env.API_KEY
@@ -43,12 +19,6 @@ module.exports = {
             const breeze = new BreezeConnect({ "appKey": apiKey })
             await breeze.generateSession(secretKey, access_token)
                 .then(async () => {
-                    console.log(intervel)
-                    console.log(startDate)
-                    console.log(endDate)
-                    console.log(symbol)
-                    console.log(expiry)
-                    console.log(strikeRange)
                     for (let i = 0; i < strikeRange.length; i++) {
                         await breeze.getHistoricalDatav2({
                             interval: intervel,
@@ -186,7 +156,37 @@ module.exports = {
                     ce_pe_diff: put_Oi - call_Oi
                 })
             }
-            resolve(fullOiDate)
+
+            const barChartTotal = [
+                {
+                    name: 'CALL',
+                    oi: 0,
+                    change_in_oi: 0
+                },
+                {
+                    name: 'PUT',
+                    oi: 0,
+                    change_in_oi: 0
+                }
+            ]
+
+            for (let i = 0; i < callOi.length; i++) {
+                barChartTotal[0].oi += callOi[i].call_Oi
+                barChartTotal[0].change_in_oi += callOi[i].call_oi_change
+            }
+            
+            for (let i = 0; i < putOi.length; i++) {
+                barChartTotal[1].oi += putOi[i].put_Oi
+                if(isNaN(putOi[i].put_oi_change)) {
+                    barChartTotal[1].change_in_oi += 0
+                } else {
+                    barChartTotal[1].change_in_oi += putOi[i].put_oi_change
+                }
+            }
+
+            console.log(barChartTotal)
+
+            resolve({lineData: fullOiDate, barData: barChartTotal})
         })
     }
 }
