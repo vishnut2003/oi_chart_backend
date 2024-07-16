@@ -25,12 +25,20 @@ module.exports = {
     loginUser: (user) => {
         return new Promise(async (resolve, reject) => {
             const existUser = await User.findOne({ email: user.email })
+            if (existUser.loggedIn === true) reject('Only one user can access at one time');
             if (!existUser) reject("User doesn't exist!");
             else {
                 // varyfy password
                 const valid = await bcrypt.compare(user.password, existUser.password)
-                if(valid) {
-                    resolve(existUser);
+                if (valid) {
+                    const userId = existUser._id
+                    const existUserId = userId.toString()
+
+                    User.findByIdAndUpdate(existUserId, { loggedIn: true })
+                        .then((res) => {
+                            resolve(existUser);
+                        })
+
                 } else {
                     reject('Password is incorrect');
                 }
@@ -47,9 +55,17 @@ module.exports = {
     },
     searchUsers: (email) => {
         return new Promise((resolve, reject) => {
-            User.findOne({email})
+            User.findOne({ email })
                 .then((res) => {
                     resolve(res)
+                })
+        })
+    },
+    logoutUser: (userId) => {
+        return new Promise((resolve, reject) => {
+            User.findByIdAndUpdate(userId, { loggedIn: false })
+                .then((res) => {
+                    resolve()
                 })
         })
     }

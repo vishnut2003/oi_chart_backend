@@ -36,17 +36,19 @@ module.exports = {
                                 for (let i = 0; i < callOiArr.length; i++) {
                                     if (callOi[i] === undefined) {
                                         let prevOi = callOi[i - 1] !== undefined ? callOi[i - 1].call_Oi : callOiArr[i].open_interest
+                                        let prevOiChange = i !== 0 ? callOi[i - 1].call_oi_change : 0
                                         let callOiObject = {
                                             call_Oi: parseInt(callOiArr[i].open_interest),
                                             call_date_time: callOiArr[i].datetime,
-                                            call_oi_change: parseInt(callOiArr[i].open_interest) - prevOi
+                                            call_oi_change: (parseInt(callOiArr[i].open_interest) - prevOi) + prevOiChange
                                         }
                                         callOi.push(callOiObject)
                                     } else {
                                         let prevOi = callOi[i - 1] !== undefined ? callOi[i - 1].call_Oi : callOi[i].call_Oi
+                                        let prevOiChange = i !== 0 ? callOi[i - 1].call_oi_change : 0
                                         let call_Oi = parseInt(callOiArr[i].open_interest)
                                         callOi[i].call_Oi = callOi[i].call_Oi + call_Oi
-                                        callOi[i].call_oi_change = callOi[i].call_Oi - prevOi == 0 ? 0 : callOi[i].call_Oi - prevOi
+                                        callOi[i].call_oi_change = callOi[i].call_Oi - prevOi == 0 ? 0 : (callOi[i].call_Oi - prevOi) + prevOiChange
                                     }
                                 }
                             })
@@ -67,17 +69,21 @@ module.exports = {
                                 for (let i = 0; i < putOiArr.length; i++) {
                                     if (putOi[i] === undefined) {
                                         let prevOi = putOi[i - 1] !== undefined ? putOi[i - 1].put_Oi : putOiArr[i].open_interest
+                                        let prevOiChange = i !== 0 ? putOi[i - 1].put_oi_change : 0
                                         let putOiObject = {
                                             put_Oi: parseInt(putOiArr[i].open_interest),
                                             put_date_time: putOiArr[i].datetime,
-                                            put_oi_change: parseInt(putOiArr[i].open_interest) - prevOi
+                                            put_oi_change: (parseInt(putOiArr[i].open_interest) - prevOi) + prevOiChange
                                         }
+
                                         putOi.push(putOiObject)
                                     } else {
                                         let prevOi = putOi[i - 1] !== undefined ? putOi[i - 1].put_Oi : putOi[i].open_interest
+                                        let prevOiChange = i != 0 ? putOi[i - 1].put_oi_change : 0
+                                        if (isNaN(prevOiChange)) prevOiChange = 0
                                         let put_Oi = parseInt(putOiArr[i].open_interest)
                                         putOi[i].put_Oi = putOi[i].put_Oi + put_Oi
-                                        putOi[i].put_oi_change = putOi[i].put_Oi - prevOi == 0 ? 0 : putOi[i].put_Oi - prevOi
+                                        putOi[i].put_oi_change = putOi[i].put_Oi - prevOi == 0 ? 0 : (putOi[i].put_Oi - prevOi) + prevOiChange
                                     }
                                 }
                             })
@@ -125,8 +131,13 @@ module.exports = {
             const fullOiDate = []
 
             for (let i = 0; i < callOi.length || i < putOi.length || i < futures.length; i++) {
-                let { call_Oi, call_oi_change, call_date_time } = callOi[i]
-                let { put_Oi, put_oi_change } = putOi[i]
+                try {
+                    var { call_Oi, call_oi_change, call_date_time } = callOi[i]
+                    var { put_Oi, put_oi_change } = putOi[i]
+                } catch(err) {
+                    console.log(err)
+                    reject()
+                }
 
                 if (isNaN(put_oi_change)) put_oi_change = 0
 
@@ -174,19 +185,19 @@ module.exports = {
                 barChartTotal[0].oi += callOi[i].call_Oi
                 barChartTotal[0].change_in_oi += callOi[i].call_oi_change
             }
-            
+
             for (let i = 0; i < putOi.length; i++) {
                 barChartTotal[1].oi += putOi[i].put_Oi
-                if(isNaN(putOi[i].put_oi_change)) {
+                if (isNaN(putOi[i].put_oi_change)) {
                     barChartTotal[1].change_in_oi += 0
                 } else {
                     barChartTotal[1].change_in_oi += putOi[i].put_oi_change
                 }
             }
 
-            console.log(barChartTotal)
+            fullOiDate[0].call_oi_change = 0
 
-            resolve({lineData: fullOiDate, barData: barChartTotal})
+            resolve({ lineData: fullOiDate, barData: barChartTotal })
         })
     }
 }

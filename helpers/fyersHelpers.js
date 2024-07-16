@@ -68,6 +68,9 @@ module.exports = {
 
                     resolve(expiryObject)
                 })
+                .catch((err) => {
+                    console.log(err)
+                })
         })
     },
     getStrikePrice: (redirectUrl, access_token, rawSymbol) => {

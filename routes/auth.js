@@ -24,4 +24,11 @@ router.post('/register', async (req, res) => {
         })
 })
 
+router.get('/logout/:id', (req, res) => {
+    userHelpers.logoutUser(req.params.id)
+        .then(() => {
+            res.status(200).send(true)
+        })
+})
+
 module.exports = router;
