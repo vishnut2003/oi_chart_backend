@@ -16,20 +16,18 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    active: {
-        type: Boolean,
-        required: true,
-        default: false
-    },
     loggedIn: {
         type: Boolean,
         required: true,
         default: false
     },
-    registerDate: {
+    expiryDate: {
         type: Date,
-        default: Date.now,
         required: true
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 })
 

@@ -195,7 +195,11 @@ module.exports = {
                 }
             }
 
-            fullOiDate[0].call_oi_change = 0
+            try{
+                fullOiDate[0].call_oi_change = 0
+            } catch(err) {
+                console.log(err)
+            }
 
             resolve({ lineData: fullOiDate, barData: barChartTotal })
         })
