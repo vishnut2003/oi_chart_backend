@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 
 router.get('/genetate-session-key', (req, res) => {
     const API_KEY = process.env.API_KEY;
-    const generateURL = `https://api.icicidirect.com/apiuser/login?api_key=3*NB4q1n9G2352492dI378599b48%26cB5`
+    const generateURL = `https://api.icicidirect.com/apiuser/login?api_key=${API_KEY}`
     res.redirect(generateURL)
 })
 
