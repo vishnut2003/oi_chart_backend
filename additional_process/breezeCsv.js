@@ -28,15 +28,27 @@ const getBreezeSymbols = async () => {
                 console.log(err)
             })
             .on('end', async () => {
-                let niftyObj;
-                csvData.map((symbolItems, index) => {
-                    if(symbolItems.symbol == 'NIFTY') {
-                        niftyObj = symbolItems
-                    }
-                })
                 const symbolSet = new Set(csvData)
                 csvData = [...symbolSet]
-                csvData.unshift(niftyObj)
+
+                const moveToFront = (data, matchingId) => {
+                    //find the index of the element in the array
+                    const index = data.findIndex(({ symbol }) => symbol === matchingId);
+                    if (index !== -1) {
+                        //if the matching element is found, 
+                        const updatedData = [...data];
+                        //then remove that element and use `unshift`
+                        updatedData.unshift(...updatedData.splice(index, 1));
+                        return updatedData;
+                    }
+                    //if the matching element is not found, then return the same array
+                    return data;
+                }
+
+                csvData = moveToFront(csvData, 'CNXBAN')
+                csvData = moveToFront(csvData, 'NIFFIN')
+                csvData = moveToFront(csvData, 'NIFTY')
+
                 resolve(csvData)
             })
     })

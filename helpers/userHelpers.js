@@ -1,5 +1,7 @@
 const User = require('../models/userModel')
 const bcrypt = require('bcrypt')
+const crypto = require('crypto')
+const sendMail = require('./mailSender')
 
 module.exports = {
     registerUser: (newUser) => {
@@ -121,6 +123,26 @@ module.exports = {
             } catch (err) {
                 console.log(err)
             }
+        })
+    },
+    resetPassword: (email) => {
+        return new Promise((resolve, reject) => {
+            User.findOne({ email }).then(async (user) => {
+                if (!user) reject('Email does not exist');
+                const buffer = crypto.randomBytes(10)
+                const token = buffer.toString('hex');
+
+                User.findOneAndUpdate({ email: email }, { resetToken: token })
+                    .then((res) => {
+                        const subject = 'Reset password token'
+                        const message = `<p>Your token for reset password</p><br><h1>${token}</h1>`
+
+                        sendMail(email, subject, message)
+                            .then(() => {
+                                resolve()
+                            })
+                    })
+            })
         })
     }
 }

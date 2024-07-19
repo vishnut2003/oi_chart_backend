@@ -31,4 +31,14 @@ router.get('/logout/:id', (req, res) => {
         })
 })
 
+router.post('/reset-password', (req, res) => {
+    userHelpers.resetPassword(req.body.email)
+        .then(() => {
+            res.status(200).send('reset token generated')
+        })
+        .catch((err) => {
+            res.status(400).send(err)
+        })
+})
+
 module.exports = router;

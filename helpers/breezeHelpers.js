@@ -48,7 +48,7 @@ module.exports = {
                                         let prevOiChange = i !== 0 ? callOi[i - 1].call_oi_change : 0
                                         let call_Oi = parseInt(callOiArr[i].open_interest)
                                         callOi[i].call_Oi = callOi[i].call_Oi + call_Oi
-                                        callOi[i].call_oi_change = callOi[i].call_Oi - prevOi == 0 ? 0 : (callOi[i].call_Oi - prevOi) + prevOiChange
+                                        callOi[i].call_oi_change = callOi[i].call_Oi - prevOi == 0 ? 0 + prevOiChange : (callOi[i].call_Oi - prevOi) + prevOiChange
                                     }
                                 }
                             })
@@ -83,7 +83,7 @@ module.exports = {
                                         if (isNaN(prevOiChange)) prevOiChange = 0
                                         let put_Oi = parseInt(putOiArr[i].open_interest)
                                         putOi[i].put_Oi = putOi[i].put_Oi + put_Oi
-                                        putOi[i].put_oi_change = putOi[i].put_Oi - prevOi == 0 ? 0 : (putOi[i].put_Oi - prevOi) + prevOiChange
+                                        putOi[i].put_oi_change = putOi[i].put_Oi - prevOi == 0 ? 0 + prevOiChange : (putOi[i].put_Oi - prevOi) + prevOiChange
                                     }
                                 }
                             })

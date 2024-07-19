@@ -28,6 +28,10 @@ const userSchema = new Schema({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    resetToken: {
+        type: String,
+        default: 'nothing'
     }
 })
 
