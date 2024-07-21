@@ -35,16 +35,18 @@ module.exports = {
             const existUser = await User.findOne({ email: user.email })
             if (!existUser) reject("User doesn't exist!");
             else {
-                if (existUser.loggedIn === true) reject('Only one user can access at one time');
                 // varyfy password
                 const valid = await bcrypt.compare(user.password, existUser.password)
                 if (valid) {
                     const userId = existUser._id
                     const existUserId = userId.toString()
 
-                    User.findByIdAndUpdate(existUserId, { loggedIn: true })
+                    const buffer = crypto.randomBytes(10)
+                    const token = buffer.toString('hex');
+
+                    User.findByIdAndUpdate(existUserId, { loggedIn: token })
                         .then((res) => {
-                            resolve(existUser);
+                            resolve(token);
                         })
 
                 } else {
@@ -54,11 +56,14 @@ module.exports = {
             }
         })
     },
-    getOneUser: (id) => {
+    getOneUser: (session) => {
         return new Promise(async (resolve, reject) => {
-            const user = await User.findById(id)
-            if (!user) reject()
-            else resolve(user)
+            User.findOne({ loggedIn: session })
+                .then((user) => {
+                    if (!user) reject()
+                    else resolve(user)
+                })
+
         })
     },
     searchUsers: (email) => {
@@ -143,6 +148,23 @@ module.exports = {
                             })
                     })
             })
+        })
+    },
+    changePassword: (resetKey, password) => {
+        return new Promise((resolve, reject) => {
+            User.findOne({ resetToken: resetKey })
+                .then(async (user) => {
+                    if (!user) {
+                        reject('Token is invalid')
+                    } else {
+                        const salt = await bcrypt.genSalt(10);
+                        const hashPassword = await bcrypt.hash(password, salt)
+                        User.findOneAndUpdate({ resetToken: resetKey }, { password: hashPassword, resetToken: 'nothing' })
+                            .then((res) => {
+                                resolve(res)
+                            })
+                    }
+                })
         })
     }
 }

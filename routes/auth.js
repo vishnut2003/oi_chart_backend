@@ -4,10 +4,8 @@ const jwt = require('jsonwebtoken');
 
 router.post('/login', (req, res) => {
     userHelpers.loginUser(req.body)
-        .then((user) => {
-            res.status(200).json({
-                user: user
-            })
+        .then((token) => {
+            res.status(200).send(token)
         })
         .catch((err) => {
             res.status(400).send(err)
@@ -24,17 +22,20 @@ router.post('/register', async (req, res) => {
         })
 })
 
-router.get('/logout/:id', (req, res) => {
-    userHelpers.logoutUser(req.params.id)
-        .then(() => {
-            res.status(200).send(true)
-        })
-})
-
 router.post('/reset-password', (req, res) => {
     userHelpers.resetPassword(req.body.email)
         .then(() => {
             res.status(200).send('reset token generated')
+        })
+        .catch((err) => {
+            res.status(400).send(err)
+        })
+})
+
+router.post('/change-password', (req, res) => {
+    userHelpers.changePassword(req.body.resetKey, req.body.password)
+        .then((user) => {
+            res.status(200).send('password changed')
         })
         .catch((err) => {
             res.status(400).send(err)

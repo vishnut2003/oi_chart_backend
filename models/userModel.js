@@ -17,9 +17,8 @@ const userSchema = new Schema({
         required: true,
     },
     loggedIn: {
-        type: Boolean,
-        required: true,
-        default: false
+        type: String,
+        default: 'nothing'
     },
     expiryDate: {
         type: Date,

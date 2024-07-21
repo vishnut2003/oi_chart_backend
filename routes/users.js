@@ -2,7 +2,7 @@ const router = require('express').Router();
 const userHelpers = require('../helpers/userHelpers')
 
 router.post('/verify', (req, res) => {
-    userHelpers.getOneUser(req.body.userId)
+    userHelpers.getOneUser(req.body.session)
         .then((user) => {
             res.status(200).send(user)
         })
