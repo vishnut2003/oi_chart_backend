@@ -52,6 +52,9 @@ module.exports = {
                                     }
                                 }
                             })
+                            .catch((err) => {
+                                console.log(err)
+                            })
 
                         await breeze.getHistoricalDatav2({
                             interval: intervel,
@@ -86,6 +89,9 @@ module.exports = {
                                         putOi[i].put_oi_change = putOi[i].put_Oi - prevOi == 0 ? 0 + prevOiChange : (putOi[i].put_Oi - prevOi) + prevOiChange
                                     }
                                 }
+                            })
+                            .catch((err) => {
+                                console.log(err)
                             })
                     }
 

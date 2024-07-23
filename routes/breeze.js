@@ -73,6 +73,9 @@ router.post('/oi-data', async (req, res) => {
         .then((oi) => {
             res.send(oi);
         })
+        .catch((err) => {
+            console.log(err)
+        })
     
 })
 
