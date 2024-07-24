@@ -148,7 +148,11 @@ module.exports = {
                 if (isNaN(put_oi_change)) put_oi_change = 0
 
                 if (call_date_time) {
-                    call_date_time = call_date_time.split(' ')[1].substring(0, 5)
+                    try {
+                        call_date_time = call_date_time.split(' ')[1].substring(0, 5)
+                    } catch (err) {
+                        console.log(err)
+                    }
                 }
 
                 let future_oi
